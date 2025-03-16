@@ -205,8 +205,10 @@ public class TrelloelloApplication implements CommandLineRunner {
 			int pos = 0;
 
 			for (Card card : heldCards) {
-				card.setPos(pos);
-				card.update();
+				if (card.getPos() != pos) {
+					card.setPos(pos);
+					card.update();
+				}
 				pos++;
 			}
 		}
