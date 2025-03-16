@@ -29,8 +29,12 @@ public class Helpers {
     }
 
     public static LocalDateTime getCardStartDateTime(Card card) {
+        return getCardStartDateTime(card, null);
+    }
+
+    public static LocalDateTime getCardStartDateTime(Card card, LocalDateTime valueInsteadOfNull) {
         if (card.getStart() == null) {
-            return null;
+            return valueInsteadOfNull;
         } else {
             //Trello doesn't officially support start TIMES, only dates. Cards' start dates seem to
             //include a time, though we can't be sure what that time will be. Therefore, strip out

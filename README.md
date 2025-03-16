@@ -24,9 +24,9 @@ To snooze a card, set its Start Date (see limitation [below](#a-note-on-start-da
 
 #### A Note on Start Dates
 
-Trello doesn't support including a time on a card's Start Date for reasons that are beyond me. Instead, if you specify a start time before which you don't want the card to be reopened in the [repetition schedule](#repetition-schedule-format), Trelloello will use the title to store this. For example, if you use the repetition schedule to say that you only want to be reminded to water your plants in the evening, you will see that Trelloello sets the title to `Water Plants {18:00}` and will then know to only reopen the card at 6pm on the date specified in the card's Start Date.
+Trello doesn't support including a time on a card's Start Date on desktop, [only on mobile](https://community.atlassian.com/t5/Trello-questions/Why-can-I-set-a-time-for-the-start-date-on-mobile-but-not-on/qaq-p/1684132). Because of this, if you specify a start time before which you don't want the card to be reopened in the [repetition schedule](#repetition-schedule-format), Trelloello will use the title to store this. For example, if you use the repetition schedule to say that you only want to be reminded to water your plants in the evening, you will see that Trelloello sets the title to `Water Plants {18:00}` and will then know to only reopen the card at 6pm on the date specified in the card's Start Date.
 
-The lack of in-built support for start times is especially a pain when snoozing cards - the only way to snooze until an evening, for example, would be to manually update the title which is much more fiddly than just updating the card's Start Date field :( 
+The lack of in-built support for start times is especially a pain when snoozing cards - the only way to snooze until an evening, for example, would be to manually update the title which is much more fiddly than just updating the card's Start Date field :(
 
 #### A Note on Labels
 

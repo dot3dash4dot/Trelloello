@@ -13,6 +13,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.time.*;
 import java.time.temporal.ChronoUnit;
+import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -90,6 +91,8 @@ public class TrelloelloApplication implements CommandLineRunner {
 		holdArchivedRepeatingCards(board, holdingList);
 
 		holdCardsWithStartDateInFuture(board, holdingList, label);
+
+		sortHeldCards(holdingList);
 
 		Instant endTime = Instant.now();
 		logger.log(String.format("Trelloello ending at %s. Took %s millisecs",
@@ -188,6 +191,23 @@ public class TrelloelloApplication implements CommandLineRunner {
 				}
 
 				card.update();
+			}
+		}
+	}
+
+	/// Sort the cards in the holding column by start date
+	private void sortHeldCards(TList holdingList) {
+		List<Card> heldCards = holdingList.fetchCards().stream()
+				.sorted(Comparator.comparing(card -> Helpers.getCardStartDateTime(card, LocalDateTime.MIN)))
+				.toList();
+
+		if (!heldCards.isEmpty()) {
+			int pos = 0;
+
+			for (Card card : heldCards) {
+				card.setPos(pos);
+				card.update();
+				pos++;
 			}
 		}
 	}
