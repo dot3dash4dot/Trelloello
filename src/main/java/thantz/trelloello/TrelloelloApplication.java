@@ -197,19 +197,33 @@ public class TrelloelloApplication implements CommandLineRunner {
 
 	/// Sort the cards in the holding column by start date
 	private void sortHeldCards(TList holdingList) {
-		List<Card> heldCards = holdingList.fetchCards().stream()
-				.sorted(Comparator.comparing(card -> Helpers.getCardStartDateTime(card, LocalDateTime.MIN)))
+		List<Card> heldCardsExpectedOrder = holdingList.fetchCards().stream()
+				.sorted(Comparator.<Card, LocalDateTime>comparing(card -> Helpers.getCardStartDateTime(card, LocalDateTime.MIN))
+						.thenComparing(Card::getName)) //Also sort by name to make sure ordering is consistent between runs
 				.toList();
 
-		if (!heldCards.isEmpty()) {
-			int pos = 0;
-
-			for (Card card : heldCards) {
-				if (card.getPos() != pos) {
-					card.setPos(pos);
-					card.update();
+		if (!heldCardsExpectedOrder.isEmpty()) {
+			//Check current order of cards
+			boolean correctOrder = true;
+			long prevPos = Long.MIN_VALUE;
+			for (Card card : heldCardsExpectedOrder) {
+				if (card.getPos() <= prevPos) {
+					correctOrder = false;
+					break;
 				}
-				pos++;
+				prevPos = card.getPos();
+			}
+
+			if (!correctOrder) { //Reorder
+				int pos = 0;
+				for (Card card : heldCardsExpectedOrder) {
+					var curPos = card.getPos();
+					if (card.getPos() != pos) {
+						card.setPos(pos);
+						card.update();
+					}
+					pos++;
+				}
 			}
 		}
 	}
