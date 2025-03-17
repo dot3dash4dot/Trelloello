@@ -20,7 +20,7 @@ To stop using a repeating card, either delete the repetition schedule from the c
 
 #### Snoozing Cards
 
-To snooze a card, set its Start Date (see limitation [below](#a-note-on-start-dates)) to a date in the future. The next time Trelloello runs, it will find any cards with a future start date, move them to a specific "holding" list and add a specific label to them. The program will then, on a future run, detect when we are past a card's start date, and "reopen" the card by moving it to the top of the left-most list on the board.
+To snooze a card, set its Start Date (see limitation [below](#a-note-on-start-dates)) to a date in the future. The next time Trelloello runs, it will find any cards with a future start date and move them to a specific "holding" list. The program will then, on a future run, detect when we are past a card's start date, and "reopen" the card by moving it to the top of the left-most list on the board.
 
 #### A Note on Start Dates
 
@@ -32,7 +32,7 @@ The lack of in-built support for start times is especially a pain when snoozing 
 
 Does this program really need to use a specific label for cards it's moving around? Well no, but:
 * It speeds things up by only searching for the repetition schedule on relevant cards rather than every card that's ever been archived
-* I quite like the way that "reopened" cards stand out on the board due to their label - this makes it easier to notice that you have something new to do
+* I quite like the way that repeating cards stand out on the board so you know you can archive them in the knowledge that they'll be reopened again in future
 
 ## Configuration
 
@@ -59,6 +59,8 @@ Building using IntelliJ will automatically include the local copy of the `trello
 To build from terminal, use: `./gradlew --include-build ..\trello-java-wrapper\ build`
 
 ## Building the Project for AWS Lambda
+
+Update the version number in `build.gradle`
 
 Run the following on the terminal: `./gradlew --include-build ..\trello-java-wrapper\ shadowJar`
 

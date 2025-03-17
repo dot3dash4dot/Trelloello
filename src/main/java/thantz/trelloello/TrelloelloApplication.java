@@ -183,12 +183,6 @@ public class TrelloelloApplication implements CommandLineRunner {
 
 				card.setIdList(holdingList.getId()); //Move to Holding List
 
-				//Could use addLabels here but that makes a separate call to the API
-				List<Label> labels = card.getLabels();
-				if (!labels.contains(label)) {
-					labels.add(label);
-					card.setLabels(labels);
-				}
 
 				card.update();
 			}
