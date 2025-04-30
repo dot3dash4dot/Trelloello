@@ -15,11 +15,11 @@ public class Helpers {
     }
 
     public static LocalDate dateToLocalDate(Date date) {
-        return LocalDate.ofInstant(date.toInstant(), ZoneId.systemDefault());
+        return LocalDate.ofInstant(date.toInstant(), ZoneId.of("UTC"));
     }
 
     public static LocalDateTime dateToLocalDateTime(Date date) {
-        return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+        return LocalDateTime.ofInstant(date.toInstant(), ZoneId.of("UTC"));
     }
 
     public static boolean pastCardStartDate(Card card)
