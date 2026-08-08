@@ -152,7 +152,10 @@ public class TrelloelloApplication implements CommandLineRunner {
 				Date originalCardStart = card.getStart();
 				if (repetitionSchedule.getFromStart()) {
 					if (originalCardStart == null) {
-						logger.log("\t\t! Start date required by repetition schedule is missing");
+						logger.log("\t\t! Start date required by repetition schedule is missing. Unarchiving");
+						card.setClosed(false); //Unarchive
+						card.setName("(Missing start!) " + card.getName());
+						card.update();
 						continue;
 					} else {
 						repetitionStart = Helpers.dateToLocalDateTime(originalCardStart);
