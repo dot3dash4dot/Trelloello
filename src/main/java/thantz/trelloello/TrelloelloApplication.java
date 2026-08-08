@@ -14,6 +14,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import java.time.*;
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -147,9 +148,25 @@ public class TrelloelloApplication implements CommandLineRunner {
 
 				logger.log("\t%s", card.getName());
 
-				LocalDateTime nextStartDateTime = LocalDateTime.now().plus(repetitionSchedule.getDuration().toTemporalAmount()).with(LocalTime.MIN);
+				LocalDateTime repetitionStart;
+				Date originalCardStart = card.getStart();
+				if (repetitionSchedule.getFromStart()) {
+					if (originalCardStart == null) {
+						logger.log("\t\t! Start date required by repetition schedule is missing");
+						continue;
+					} else {
+						repetitionStart = Helpers.dateToLocalDateTime(originalCardStart);
+					}
+				} else {
+					// TODO: if the card was closed before midnight but Trelloello runs just after midnight, then the next
+					// start will be out by a day
+					repetitionStart = LocalDateTime.now();
+				}
 
-				//Trello has no concept of start time, so store it in the title
+				LocalDateTime nextStartDateTime = repetitionStart.plus(repetitionSchedule.getDuration().toTemporalAmount()).with(LocalTime.MIN);
+
+				//As Trello doesn't support including a time on a card's Start Date on desktop, only on
+				//mobile (see https://jira.atlassian.com/browse/TRELLO-125), we store the time in the title
 				card.setName(CardNameWithTime.getNewName(card.getName(), repetitionSchedule.getStartTime()));
 
 				card.setClosed(false); //Unarchive
@@ -158,9 +175,14 @@ public class TrelloelloApplication implements CommandLineRunner {
 				card.update();
 
 				if (repetitionSchedule.getStartTime() != null) {
+					//Update nextStartDateTime purely for logging
 					nextStartDateTime = nextStartDateTime.with(repetitionSchedule.getStartTime());
 				}
+
 				logger.log("\t\tNew start = %s from %s%n", nextStartDateTime, repetitionSchedule.getSourceText());
+				if (repetitionSchedule.getFromStart()) {
+					logger.log("\t\t\t(From original start %s)", originalCardStart);
+				}
 			}
 		}
 	}

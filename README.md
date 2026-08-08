@@ -1,7 +1,8 @@
 # Trelloello
 This program enables the following on a Trello board:
-* Create cards that repeat after a given amount of time from when they were last completed
-  * e.g. a card that reminds you to water the plants 5 days after you last did it
+* Create cards that repeat after a given amount of time from either:
+  * The card's completion date, e.g. a card that reminds you to water the plants 5 days after you last did it
+  * The card's start date, e.g. a card that reminds you to take the bins out every 2 weeks
 * Allow cards to be snoozed till a later date, like how you can snooze emails in Gmail
   * e.g. you want to ignore a task until the weekend
   * Yes, there's a Trello power-up that does this, but it doesn't support mobile :(
@@ -70,7 +71,7 @@ In AWS, set the handler to `thantz.trelloello.TrelloelloApplication::handleReque
 
 ## Repetition Schedule Format
 
-Trelloello expects repetition schedules to use the [ISO 8601 duration](https://en.wikipedia.org/wiki/ISO_8601#Durations) format, surrounded by `{}`
+Trelloello expects repetition schedules to use the [ISO 8601 duration](https://en.wikipedia.org/wiki/ISO_8601#Durations) format, plus an optional time string and/or `start` label, surrounded by `{}`
 
 * `P` is the duration designator (for period) placed at the start of the duration representation.
   * `Y` = years
@@ -90,3 +91,5 @@ Trelloello expects repetition schedules to use the [ISO 8601 duration](https://e
   * `{P1DT12H}` = 1 day and 12 hours (which can also be represented as `{PT36H}`)
 * For durations that only include days, weeks, etc. (i.e. no time components) the duration string can then be followed by an optional 24-hour time string. If present, once the duration string determines the day on which the card will be reopened, the time string then determines what time on that day it’ll actually happen. This is useful if you only want to be reminded to do something in the evening, for example. 
   * e.g. `{P5D 18:00}` = in 5 days' time at 6pm
+* To make a card's next repeat date be based off its *start* date rather than it's *last-completed* date, end the repetition schedule with the label `start`
+  * e.g. `{P2W start}` or `{P2W 18:00 start}`

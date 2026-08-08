@@ -14,33 +14,37 @@ public class RepetitionScheduleTests {
         int secsInDay = 60*60*24;
 
         return Stream.of(
-                Arguments.of("", false, 0, 0, 0, 0, 0, 0, 0, null),
-                Arguments.of("dsadsadsa", false, 0, 0, 0, 0, 0, 0, 0, null),
-                Arguments.of("P1D", false, 0, 0, 0, 0, 0, 0, 0, null),
-                Arguments.of("bsjadbjhsad{P1D}dnjsnfjdfs", true, 0, 0, 0, 1, 0, 0, 0, null),
-                Arguments.of("bsjadbjhsad{P1D}", true, 0, 0, 0, 1, 0, 0, 0, null),
-                Arguments.of("{P1D}dnjsnfjdfs", true, 0, 0, 0, 1, 0, 0, 0, null),
-                Arguments.of("{P1Y}", true, 1, 0, 0, 0, 0, 0, 0, null),
-                Arguments.of("{P1M}", true, 0, 1, 0, 0, 0, 0, 0, null),
-                Arguments.of("{P2W}", true, 0, 0, 2, 0, 0, 0, 0, null),
-                Arguments.of("{P3W2D}", true, 0, 0, 3, 2, 0, 0, 0, null),
-                Arguments.of("{P1Y6M}", true, 1, 6, 0, 0, 0, 0, 0, null),
-                Arguments.of("{P18M}", true, 0, 18, 0, 0, 0, 0, 0, null),
-                Arguments.of("{PT10M}", true, 0, 0, 0, 0, 0, 10, 0, null),
-                Arguments.of("{P1DT12H}", true, 0, 0, 0, 1, 12, 0, 0, null),
-                Arguments.of("{PT36H}", true, 0, 0, 0, 0, 36, 0, 0, null),
-                Arguments.of("{PT50M}", true, 0, 0, 0, 0, 0, 50, 0, null),
-                Arguments.of("{PT90S}", true, 0, 0, 0, 0, 0, 0, 90, null),
-                Arguments.of("{P3D 18:00}", true, 0, 0, 0, 3, 0, 0, 0, LocalTime.of(18, 0, 0)),
-                Arguments.of("{P1WT1M 05:21}", true, 0, 0, 1, 0, 0, 1, 0, LocalTime.of(5, 21, 0)),
-                Arguments.of("{20:00}", false, 0, 0, 0, 0, 0, 0, 0, null)
+                Arguments.of("", false, 0, 0, 0, 0, 0, 0, 0, null, false),
+                Arguments.of("dsadsadsa", false, 0, 0, 0, 0, 0, 0, 0, null, false),
+                Arguments.of("P1D", false, 0, 0, 0, 0, 0, 0, 0, null, false),
+                Arguments.of("bsjadbjhsad{P1D}dnjsnfjdfs", true, 0, 0, 0, 1, 0, 0, 0, null, false),
+                Arguments.of("bsjadbjhsad{P1D}", true, 0, 0, 0, 1, 0, 0, 0, null, false),
+                Arguments.of("{P1D}dnjsnfjdfs", true, 0, 0, 0, 1, 0, 0, 0, null, false),
+                Arguments.of("{P1Y}", true, 1, 0, 0, 0, 0, 0, 0, null, false),
+                Arguments.of("{P1M}", true, 0, 1, 0, 0, 0, 0, 0, null, false),
+                Arguments.of("{P2W}", true, 0, 0, 2, 0, 0, 0, 0, null, false),
+                Arguments.of("{P3W2D}", true, 0, 0, 3, 2, 0, 0, 0, null, false),
+                Arguments.of("{P1Y6M}", true, 1, 6, 0, 0, 0, 0, 0, null, false),
+                Arguments.of("{P18M}", true, 0, 18, 0, 0, 0, 0, 0, null, false),
+                Arguments.of("{PT10M}", true, 0, 0, 0, 0, 0, 10, 0, null, false),
+                Arguments.of("{P1DT12H}", true, 0, 0, 0, 1, 12, 0, 0, null, false),
+                Arguments.of("{PT36H}", true, 0, 0, 0, 0, 36, 0, 0, null, false),
+                Arguments.of("{PT50M}", true, 0, 0, 0, 0, 0, 50, 0, null, false),
+                Arguments.of("{PT90S}", true, 0, 0, 0, 0, 0, 0, 90, null, false),
+                Arguments.of("{P3D 18:00}", true, 0, 0, 0, 3, 0, 0, 0, LocalTime.of(18, 0, 0), false),
+                Arguments.of("{P1WT1M 05:21}", true, 0, 0, 1, 0, 0, 1, 0, LocalTime.of(5, 21, 0), false),
+                Arguments.of("{20:00}", false, 0, 0, 0, 0, 0, 0, 0, null, false),
+                Arguments.of("{P18M start}", true, 0, 18, 0, 0, 0, 0, 0, null, true),
+                Arguments.of("{PT10M start}", true, 0, 0, 0, 0, 0, 10, 0, null, true),
+                Arguments.of("{P1DT12H start}", true, 0, 0, 0, 1, 12, 0, 0, null, true),
+                Arguments.of("{P3D 18:00 start}", true, 0, 0, 0, 3, 0, 0, 0, LocalTime.of(18, 0, 0), true)
         );
     }
 
     @ParameterizedTest
     @MethodSource("repetitionScheduleParams")
     void checkRepetitionSchedules(String cardDescription,
-                                  boolean foundSchedule,
+                                  boolean shouldFindSchedule,
                                   int years,
                                   int months,
                                   int weeks,
@@ -48,10 +52,11 @@ public class RepetitionScheduleTests {
                                   int hours,
                                   int mins,
                                   int secs,
-                                  LocalTime startTime) {
+                                  LocalTime startTime,
+                                  boolean fromStart) {
         RepetitionSchedule schedule = RepetitionSchedule.fromCardDescription(cardDescription);
 
-        if (!foundSchedule) {
+        if (!shouldFindSchedule) {
             Assert.isNull(schedule,
                     String.format("%s unexpectedly parsed as valid schedule", cardDescription));
             return;
@@ -78,5 +83,16 @@ public class RepetitionScheduleTests {
                     String.format("%s time unexpectedly parsed as %s",
                             cardDescription, schedule.getStartTime()));
         }
+
+        if (fromStart) {
+            Assert.isTrue(schedule.getFromStart(),
+                    String.format("Schedule %s wasn't found to be 'from start'",
+                            cardDescription));
+        } else {
+            Assert.isTrue(!schedule.getFromStart(),
+                    String.format("Schedule %s was incorrectly found to be 'from start'",
+                            cardDescription));
+        }
+
     }
 }

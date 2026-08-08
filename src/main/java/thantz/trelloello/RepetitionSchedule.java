@@ -12,11 +12,13 @@ public class RepetitionSchedule {
     private final String sourceText;
     private final Duration<IsoUnit> duration;
     private final LocalTime startTime;
+    private final boolean fromStart;
 
-    public RepetitionSchedule(String sourceText, Duration<IsoUnit> duration, LocalTime startTime) {
+    public RepetitionSchedule(String sourceText, Duration<IsoUnit> duration, LocalTime startTime, boolean fromStart) {
         this.sourceText = sourceText;
         this.duration = duration;
         this.startTime = startTime;
+        this.fromStart = fromStart;
     }
 
     public String getSourceText() {
@@ -31,12 +33,16 @@ public class RepetitionSchedule {
         return startTime;
     }
 
+    public boolean getFromStart() { return fromStart; }
+
     public static RepetitionSchedule fromCardDescription(String description) {
-        //The string we're looking for is an ISO 8601 duration, followed by a time, e.g:
+        //The string we're looking for is an ISO 8601 duration, followed by an optional time and/or 'start' label, e.g:
         //	{P3D 18:00}
         //	{P1WT1M 5:21}
         //	{P1Y}
-        String regexPattern = "\\{(P\\S{2,})(?:\\s(\\d{1,2}:\\d{2}))?}";
+        //	{P2W 18:00 start}
+        //	{P1Y start}
+        String regexPattern = "\\{(P\\S{2,})(?:\\s(\\d{1,2}:\\d{2}))?( start)?}";
 
         Pattern pattern = Pattern.compile(regexPattern);
         Matcher matcher = pattern.matcher(description);
@@ -59,7 +65,9 @@ public class RepetitionSchedule {
                 }
             }
 
-            return new RepetitionSchedule(matcher.group(), duration, startTime);
+            boolean fromStart = matcher.group(3) != null;
+
+            return new RepetitionSchedule(matcher.group(), duration, startTime, fromStart);
         } else {
             return null;
         }
