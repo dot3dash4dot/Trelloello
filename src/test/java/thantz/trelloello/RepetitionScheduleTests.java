@@ -85,11 +85,11 @@ public class RepetitionScheduleTests {
         }
 
         if (fromStart) {
-            Assert.isTrue(schedule.getFromStart(),
+            Assert.isTrue(schedule.getRepeatFromStartDate(),
                     String.format("Schedule %s wasn't found to be 'from start'",
                             cardDescription));
         } else {
-            Assert.isTrue(!schedule.getFromStart(),
+            Assert.isTrue(!schedule.getRepeatFromStartDate(),
                     String.format("Schedule %s was incorrectly found to be 'from start'",
                             cardDescription));
         }

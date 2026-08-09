@@ -1,6 +1,5 @@
 package thantz.trelloello;
 
-import com.julienvey.trello.domain.Card;
 import net.time4j.Duration;
 import net.time4j.IsoUnit;
 
@@ -12,13 +11,13 @@ public class RepetitionSchedule {
     private final String sourceText;
     private final Duration<IsoUnit> duration;
     private final LocalTime startTime;
-    private final boolean fromStart;
+    private final boolean repeatFromStartDate;
 
-    public RepetitionSchedule(String sourceText, Duration<IsoUnit> duration, LocalTime startTime, boolean fromStart) {
+    public RepetitionSchedule(String sourceText, Duration<IsoUnit> duration, LocalTime startTime, boolean repeatFromStartDate) {
         this.sourceText = sourceText;
         this.duration = duration;
         this.startTime = startTime;
-        this.fromStart = fromStart;
+        this.repeatFromStartDate = repeatFromStartDate;
     }
 
     public String getSourceText() {
@@ -33,7 +32,7 @@ public class RepetitionSchedule {
         return startTime;
     }
 
-    public boolean getFromStart() { return fromStart; }
+    public boolean getRepeatFromStartDate() { return repeatFromStartDate; }
 
     public static RepetitionSchedule fromCardDescription(String description) {
         //The string we're looking for is an ISO 8601 duration, followed by an optional time and/or 'start' label, e.g:
@@ -65,9 +64,9 @@ public class RepetitionSchedule {
                 }
             }
 
-            boolean fromStart = matcher.group(3) != null;
+            boolean repeatFromStartDate = matcher.group(3) != null;
 
-            return new RepetitionSchedule(matcher.group(), duration, startTime, fromStart);
+            return new RepetitionSchedule(matcher.group(), duration, startTime, repeatFromStartDate);
         } else {
             return null;
         }
