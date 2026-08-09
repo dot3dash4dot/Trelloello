@@ -157,6 +157,12 @@ public class TrelloelloApplication implements CommandLineRunner {
 						card.setName("(Missing start!) " + card.getName());
 						card.update();
 						continue;
+					} else if (!Helpers.pastCardStartDate(card)) {
+						//Handle when a 'repeat from start date' card has a start date in the future
+						//and then is archived (which isn't needed as it would be picked up by
+						//holdCardsWithStartDateInFuture instead). Handle this by not setting
+						//repetitionStart - this means that the start date will stay as it is
+						logger.log("\t\tAssuming this 'repeat from start date' card was unnecessarily archived after setting future start date. Unarchiving");
 					} else {
 						repetitionStart = Helpers.dateToLocalDateTime(cardOriginalStart);
 					}
@@ -166,7 +172,20 @@ public class TrelloelloApplication implements CommandLineRunner {
 					repetitionStart = LocalDateTime.now();
 				}
 
-				LocalDateTime nextStartDateTime = repetitionStart.plus(repetitionSchedule.getDuration().toTemporalAmount()).with(LocalTime.MIN);
+				if (repetitionStart != null) {
+					LocalDateTime nextStartDateTime = repetitionStart.plus(repetitionSchedule.getDuration().toTemporalAmount()).with(LocalTime.MIN);
+					card.setStart(Helpers.localDateTimeToDate(nextStartDateTime));
+
+					if (repetitionSchedule.getStartTime() != null) {
+						//Update nextStartDateTime purely for logging
+						nextStartDateTime = nextStartDateTime.with(repetitionSchedule.getStartTime());
+					}
+
+					logger.log("\t\tNew start = %s from %s%n", nextStartDateTime, repetitionSchedule.getSourceText());
+					if (repetitionSchedule.getRepeatFromStartDate()) {
+						logger.log("\t\t\t(From original start %s)", cardOriginalStart);
+					}
+				}
 
 				//As Trello doesn't support including a time on a card's Start Date on desktop, only on
 				//mobile (see https://jira.atlassian.com/browse/TRELLO-125), we store the time in the title
@@ -174,18 +193,7 @@ public class TrelloelloApplication implements CommandLineRunner {
 
 				card.setClosed(false); //Unarchive
 				card.setIdList(holdingList.getId()); //Move to Holding List
-				card.setStart(Helpers.localDateTimeToDate(nextStartDateTime));
 				card.update();
-
-				if (repetitionSchedule.getStartTime() != null) {
-					//Update nextStartDateTime purely for logging
-					nextStartDateTime = nextStartDateTime.with(repetitionSchedule.getStartTime());
-				}
-
-				logger.log("\t\tNew start = %s from %s%n", nextStartDateTime, repetitionSchedule.getSourceText());
-				if (repetitionSchedule.getFromStart()) {
-					logger.log("\t\t\t(From original start %s)", originalCardStart);
-				}
 			}
 		}
 	}
